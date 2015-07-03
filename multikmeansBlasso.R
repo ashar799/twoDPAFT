@@ -1,4 +1,4 @@
-multikmeansBlasso = function(c,Y1,Y2,D1,D2,That, F,K, beta, ro, r, si,sig2.dat,gmmx1, gmmx2, regy1, regy2 ) {
+multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx1, gmmx2, regy1, regy2,surv.obj ) {
   
   gmmx1 <- gmmx1
   gmmx2 <- gmmx2
@@ -7,15 +7,32 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That, F,K, beta, ro, r, si,sig2.dat,g
   regy2 <- regy2
   
   
+  pc1 <- prcomp(Y1)
+  pc.pred1 <- predict(pc1,newdata = Y1)[,1]
+  pc2 <- prcomp(Y2)
+  pc.pred2 <- predict(pc2, newdata = Y2)[,2]
   
   
-  Yg <- cbind(Y1,Y2)
-  G <- F
-  k.data <- kmeans(Yg,G)
-  c <- k.data$cluster
+  Yg <- cbind(pc.pred1,pc.pred2,That)
+  pval =c(0)
+  pval[1] =1
+  
+  c.te <- list(0)
+  
+  for ( i in 2:5){ 
+  set.seed(i)
+  k.data <- kmeans(Yg,i)
+  c.te[[i]] <- k.data$cluster
+  logr <- survdiff(surv.obj ~ c.te[[i]])
+  pval[i] <- 1 - pchisq(logr$chisq, (i-1))
+  }
+  c <- c.te[[which(pval == min(pval))]]
+  
+  
+            
+            
+  Ygr <- cbind(Y1,Y2)          
   Dg <- D1 +D2
-  
-  
   mug = matrix(data = NA, nrow = K, ncol = Dg)
   betahatg = matrix(data = NA, nrow = K, ncol = Dg)
   tau2g = matrix(data = NA, nrow = K, ncol = Dg)
@@ -29,9 +46,14 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That, F,K, beta, ro, r, si,sig2.dat,g
   prior.numclust <- table(factor(c, levels = 1:K))
   prior.activeclass<- which(prior.numclust!=0)
   
-  ### The means are set using the k-means
+  ### The means are set to the cluster means
+  
   for ( i in 1:length(prior.activeclass)){
-    mug[prior.activeclass[i],1:Dg] <-  k.data$centers[i,1:Dg] 
+    
+    lclust <- which(c == prior.activeclass[i])
+    
+    
+    mug[prior.activeclass[i],1:Dg] <-  apply(Ygr[lclust,],2,mean)
     
     gmmx1$S[prior.activeclass[i],1:D1,1:D1] <-  priordraw(beta, gmmx1$W, gmmx1$epsilon, ro, r, si,N,D1, sig2.dat)$Sigma
     
@@ -47,7 +69,7 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That, F,K, beta, ro, r, si,sig2.dat,g
     
     Ytemp <-  matrix(NA, nrow = length(lclust), ncol = Dg)
     
-    Ytemp <- scale(Yg[lclust,1:Dg], center = TRUE, scale = TRUE)
+    Ytemp <- scale(Ygr[lclust,1:Dg], center = TRUE, scale = TRUE)
     
     ### Part where I use the MONOMVN PACKAGE
     
@@ -107,7 +129,7 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That, F,K, beta, ro, r, si,sig2.dat,g
   
   gmmx1$mu <-  mug[,1:D1] 
   
-  gmmx2$mu2 <-  mug[,indte:Dg]
+  gmmx2$mu <-  mug[,indte:Dg]
   
   regy1$betahat <-  betahatg[,1:D1]
   
@@ -122,7 +144,22 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That, F,K, beta, ro, r, si,sig2.dat,g
   regy2$lambda2t <- lambda2g[indte:Dg]
   
   
- 
+  ########################## THE HYPERPARAMETERS OF THE GMM #################################  
+  source('posteriorhyper.R')  
+  
+  # Updating the hyper paramters for the first data set
+  hypercognate <- posteriorhyper (c, Y1, gmmx1$mu, gmmx1$S, gmmx1$epsilon, gmmx1$W, beta, ro,D1 )
+  gmmx1$epsilon <- hypercognate$epsilon
+  tmpW <- hypercognate$W
+  gmmx1$W <- matrix(as.matrix(tmpW),nrow = D1, ncol =D1)
+  
+  ##Updating the hyper parameter for the second data set
+  hypercognate2 <- posteriorhyper (c, Y2, gmmx2$mu, gmmx2$S, gmmx2$epsilon, gmmx2$W, beta, ro,D2 )
+  gmmx2$epsilon <- hypercognate2$epsilon
+  tmpW2 <- hypercognate2$W
+  gmmx2$W <- matrix(as.matrix(tmpW2),nrow = D2, ncol =D2)
+  
+  
   
  list('c'=c,'gmmx1'=gmmx1,'gmmx2'= gmmx2, 'regy1'= regy1,'regy2'= regy2)  
   
