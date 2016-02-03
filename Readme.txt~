@@ -1,4 +1,4 @@
-This project implements a Dirichlet Process Mixture Model. 
+This project implements a Dirichlet Process Gaussian Mixture Model. 
 All the code has been written in R.
 The file simulation_main.R contains the file for simulating 2 data sets and running the bayesian model.
 This code implements data sources from kinds of data and forces consistent clustering
