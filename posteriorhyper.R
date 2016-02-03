@@ -35,17 +35,17 @@ posteriorhyper = function(c, Y, mu, S, epsilon, W, beta, ro,D ) {
 
 # Update W the Wishart parameter
  
-  sum.w <- sum.precision <- matrix(0, nrow = D, ncol =D)
+  sum.w <-  matrix(0, nrow = D, ncol =D)
   for ( z in 1:nactive) {
   sum.w <- sum.w + beta * S[activeclust[z],1:D, 1:D]
   }
 
   
-res <- try(rWishart(n = 1, df = beta * nactive + D, Sigma =  solve(D * InvCov + beta * sum.w )), silent=TRUE)
+res <- try(rWishart(n = 1, df = beta * nactive + D, Sigma =  solve(D * InvCov + sum.w )), silent=TRUE)
 if (class(res) == "try-error"){
   W = W
 } else{
-  W = rWishart(n = 1, df = beta * nactive + D, Sigma =  solve(D * InvCov + beta * sum.w ))
+  W = rWishart(n = 1, df = beta * nactive + D, Sigma =  solve(D * InvCov +  sum.w ))
 }
 
   list('epsilon' = epsilon,'W' = W , 'ro' = ro) 

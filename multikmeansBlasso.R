@@ -1,4 +1,4 @@
-multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx1, gmmx2, regy1, regy2,surv.obj ) {
+multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, r, si,sig2.dat,gmmx1, gmmx2, regy1, regy2,surv.obj ) {
   
   gmmx1 <- gmmx1
   gmmx2 <- gmmx2
@@ -7,28 +7,20 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx
   regy2 <- regy2
   
   
-  pc1 <- prcomp(Y1)
-  pc.pred1 <- predict(pc1,newdata = Y1)[,1]
-  pc2 <- prcomp(Y2)
-  pc.pred2 <- predict(pc2, newdata = Y2)[,2]
+#   pc1 <- prcomp(Y1)
+#   pc.pred1 <- predict(pc1,newdata = Y1)[,1]
+#   pc2 <- prcomp(Y2)
+#   pc.pred2 <- predict(pc2, newdata = Y2)[,2]
+#   
   
-  
-  Yg <- cbind(pc.pred1,pc.pred2,That)
+  Yg <- cbind(Y1,Y2)
   pval =c(0)
   pval[1] =1
   
-  c.te <- list(0)
-  
-  for ( i in 2:5){ 
-  set.seed(i)
-  k.data <- kmeans(Yg,i)
-  c.te[[i]] <- k.data$cluster
-  logr <- survdiff(surv.obj ~ c.te[[i]])
-  pval[i] <- 1 - pchisq(logr$chisq, (i-1))
-  }
-  c <- c.te[[which(pval == min(pval))]]
-  
-  
+  G <- F
+  k.data <- kmeans(Yg,F,nstart =10)
+  c <- k.data$cluster
+
             
             
   Ygr <- cbind(Y1,Y2)          
@@ -55,9 +47,9 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx
     
     mug[prior.activeclass[i],1:Dg] <-  apply(Ygr[lclust,],2,mean)
     
-    gmmx1$S[prior.activeclass[i],1:D1,1:D1] <-  priordraw(beta, gmmx1$W, gmmx1$epsilon, ro, r, si,N,D1, sig2.dat)$Sigma
+    gmmx1$S[prior.activeclass[i],1:D1,1:D1] <-  priordraw(gmmx1$beta, gmmx1$W, gmmx1$epsilon, gmmx1$ro, r, si,N,D1, sig2.dat)$Sigma
     
-    gmmx2$S[prior.activeclass[i],1:D2,1:D2] <-  priordraw(beta, gmmx2$W, gmmx2$epsilon, ro, r, si,N,D2, sig2.dat)$Sigma
+    gmmx2$S[prior.activeclass[i],1:D2,1:D2] <-  priordraw(gmmx2$beta, gmmx2$W, gmmx2$epsilon, gmmx2$ro, r, si,N,D2, sig2.dat)$Sigma
     
     lclust <- which(c == prior.activeclass[i])
     
@@ -122,6 +114,7 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx
     regy1$sigma2[inactive[i]] <- NA
     betahatg[inactive[i],1:Dg] <- NA 
     lambda2g[inactive[i]] <- NA
+    sigma2[inactive[i]] <- NA
     tau2g[inactive[i], 1:Dg] <- NA
   }
   
@@ -139,28 +132,28 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx
   
   regy2$tau2 <-  tau2g[,indte:Dg]
   
-  regy1$lambda2 <- lambda2g[1:D1]
+  regy1$lambda2 <- lambda2g
   
-  regy2$lambda2t <- lambda2g[indte:Dg]
+  regy2$lambda2 <- lambda2g
+
+  regy1$sigma2 <-  sigma2
+ 
+  regy2$sigma2 <- sigma2
   
   
-  ########################## THE HYPERPARAMETERS OF THE GMM #################################  
-  source('posteriorhyper.R')  
+  ########################## THE HYPERPARAMETERS OF THE GMM are initialized to Empirical Bayes #################################  
+   
   
-  # Updating the hyper paramters for the first data set
-  hypercognate <- posteriorhyper (c, Y1, gmmx1$mu, gmmx1$S, gmmx1$epsilon, gmmx1$W, beta, ro,D1 )
-  gmmx1$epsilon <- hypercognate$epsilon
-  tmpW <- hypercognate$W
-  gmmx1$W <- matrix(as.matrix(tmpW),nrow = D1, ncol =D1)
+  
+  gmmx1$epsilon <- as.vector(apply(Y1,2,mean))
+  gmmx1$W <- as.matrix(cov(Y1))
   
   ##Updating the hyper parameter for the second data set
-  hypercognate2 <- posteriorhyper (c, Y2, gmmx2$mu, gmmx2$S, gmmx2$epsilon, gmmx2$W, beta, ro,D2 )
-  gmmx2$epsilon <- hypercognate2$epsilon
-  tmpW2 <- hypercognate2$W
-  gmmx2$W <- matrix(as.matrix(tmpW2),nrow = D2, ncol =D2)
+  
+  gmmx2$epsilon <- as.vector(apply(Y2,2,mean))
+  gmmx2$W <- as.matrix(cov(Y2))
   
   
-  
- list('c'=c,'gmmx1'=gmmx1,'gmmx2'= gmmx2, 'regy1'= regy1,'regy2'= regy2)  
+  list('c'=c,'gmmx1'=gmmx1,'gmmx2'= gmmx2, 'regy1'= regy1,'regy2'= regy2)  
   
 }

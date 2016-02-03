@@ -1,4 +1,4 @@
-posteriortimeparameterspenalized = function(c,Y, That, lambda2, tau2, sigma2, beta0, betahat, K, epsilon, W, beta, ro, r, si, sig2.data,N,D ) {
+posteriortimeparameterspenalized = function(c,Y, That, lambda2, tau2, sigma2, beta0, betahat, K, epsilon, W,  beta,ro,r, si, sig2.data,N, D ) {
   
   numclust <- table(factor(c, levels = 1:K))
   activeclass<- which(numclust!=0)
@@ -30,7 +30,9 @@ posteriortimeparameterspenalized = function(c,Y, That, lambda2, tau2, sigma2, be
     if (length(clust) > 1){
       Ttemp <- as.vector(That[clust])
       ntemp <- length(clust)
-      reg.blas <- blasso(Ytemp, Ttemp, T =300,thin = 10, RJ = TRUE, beta = as.vector(betahat[activeclass[j],]),lambda2 = lambda2[activeclass[j]],s2 = sigma2[activeclass[j]], mprior = 0.20 ,rd =c(r,si), ab = c(1,1),normalize = TRUE, verb = 0)
+      ##reg.blas <- blasso(Ytemp, Ttemp, T =1000,thin = 10, RJ = TRUE, beta = as.vector(betahat[activeclass[j],]),lambda2 = lambda2[activeclass[j]],s2 = sigma2[activeclass[j]], mprior = 0.20 ,rd =c(r,si), ab = c(1,1),normalize = TRUE, verb = 0)
+      reg.blas <- blasso(Ytemp, Ttemp, mprior = 0.20 ,rd =c(r,si), ab = c(1,1),normalize = TRUE, verb = 0 )
+      
       sum <- summary(reg.blas, burnin= 100)
       
       ## Selecting those features which are relevant

@@ -2,7 +2,7 @@ library(globaltest)
 library(org.Hs.eg.db)
 library(KEGG.db)
 library(IlluminaHumanMethylation450k.db)
-
+library(survival)
 ###### This script calculates the Pathway level scores for both Gene Expression Data && Methylation Data   ####
 rm(list = ls())
 load('/home/bit/ashar/ExpressionSets/Verhark/IntegratedDataSurv.rda')
@@ -134,21 +134,20 @@ rownames(data.meth.combined) <- rownames(meth.expr.main)
 colnames(data.meth.combined) <- pathway.meth.names
 
 
-### Do some kind of variable selction to improve clustering
-
-datag <- cbind(data.gene.combined, data.meth.combined)
-library(clustvarsel)
-cl <- clustvarsel(data = datag, G = 1:5, search = 'greedy', emModels1 = "E", direction = 'backward')
 
 
 ######################################
 ## Principal componets of Pathway Gene Data
 pc <- prcomp(data.gene.combined)
 pc.pred <- predict(pc,newdata = data.gene.combined)
-plot(pc.pred[,1], pc.pred[,2], pch = 19, col =c)
+plot(pc.pred[,1], pc.pred[,2], pch = 19)
 ## Principal Components of Methylation Data
 pc <- prcomp(data.meth.combined)
 pc.pred <- predict(pc,newdata = data.meth.combined)
 plot(pc.pred[,1], pc.pred[,2], pch = 19)
+
+#################################################
+
+
 
 
