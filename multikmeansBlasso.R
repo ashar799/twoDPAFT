@@ -146,12 +146,12 @@ multikmeansBlasso = function(c,Y1,Y2,D1,D2,That,K, r, si,sig2.dat,gmmx1, gmmx2, 
   
   
   gmmx1$epsilon <- as.vector(apply(Y1,2,mean))
-  gmmx1$W <- as.matrix(cov(Y1))
+  gmmx1$W <- diag(diag(as.matrix(cov(Y1))))
   
   ##Updating the hyper parameter for the second data set
   
   gmmx2$epsilon <- as.vector(apply(Y2,2,mean))
-  gmmx2$W <- as.matrix(cov(Y2))
+  gmmx2$W <- diag(diag(as.matrix(cov(Y2))))
   
   
   list('c'=c,'gmmx1'=gmmx1,'gmmx2'= gmmx2, 'regy1'= regy1,'regy2'= regy2)  

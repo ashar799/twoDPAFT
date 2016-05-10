@@ -34,7 +34,7 @@ simulatemultiDPMM()
 
 
 ############################# PARAMETERS for GIBB's SAMPLING ####
-iter = 50
+iter = 100
 iter.burnin = 50
 iter.thin  = 5
 k = 2
@@ -50,6 +50,10 @@ initializemultiDPMM()
 ################# GroundTruth (by pasting togehter columns)
 source('multigroundtruth.R')
 multigroundtruth()
+
+################# GroundTruth (by pasting togehter columns)
+source('imultigroundtruth.R')
+imultigroundtruth()
 
 ########### Train the Model #########################################
 source('burninmultiDPMM.R')
@@ -72,4 +76,10 @@ test.randindex <- adjustedRandIndex(apply(posteriorprob,1,which.max),c.true.new)
 ###### Predicting Survival Times ####################################
 source('multipredictchineseAFTtime.R')
 multipredictchineseAFTtime(Y1.test, Y2.test)
-predicted.cindex <- survConcordance(Surv(time.new,censoring.new) ~ exp(-post.time.avg))[1]
+predicted.cindex <- survConcordance(Surv(exp(time.new),censoring.new) ~ exp(-post.time.avg))[1]
+
+########### Check Prediction Ground Truth
+source('predictionGroundTruth.R')
+predictionGroundTruth()
+
+

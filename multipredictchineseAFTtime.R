@@ -190,7 +190,7 @@ multipredictchineseAFTtime = function(Y1.test, Y2.test){
     post.time[l,count] <- as.numeric(t(posteriortime[,l]) %*% weights[,l])
     } 
   
-     cind[count] <- as.numeric(survConcordance(Surv(time.new,censoring.new) ~ exp(-post.time[,count]))[1]) 
+     cind[count] <- as.numeric(survConcordance(Surv(exp(time.new),censoring.new) ~ exp(-post.time[,count]))[1]) 
      print(cind[count])
     
 #   Sys.sleep(0.1)

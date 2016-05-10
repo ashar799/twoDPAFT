@@ -12,7 +12,7 @@ priordraw = function(beta, W, epsilon, ro, r, si,N,D, sig2.dat) {
   
   res <- try(rWISHART(1, beta, solve((beta*W))), silent=TRUE)
   if (class(res) == "try-error"){
-    St <- solve(W)
+    St <- diag(D)
   } else{
     St <- rWISHART(1, beta, solve((beta*W)))
   }

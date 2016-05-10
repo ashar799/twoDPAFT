@@ -119,18 +119,18 @@ for (o in 1:iter.burnin) {
   
   
   ######################## The Censored Times ###########################################################
-  source('multiupdatetime.R')
-  # Updating the Time Variable
-  ti <- NA
-  ti <- multiupdatetime(c, Y1, Y2, Time,That, regy1, regy2)
-  That <- ti$time
-  
-  
-  
+#   source('multiupdatetime.R')
+#   # Updating the Time Variable
+#   ti <- NA
+#   ti <- multiupdatetime(c, Y1, Y2, Time,That, regy1, regy2)
+#   That <- ti$time
+#   
+#   
+#   
   
   ##################### Print SOME Statistics #####################################################
-  randy[o] <- adjustedRandIndex(c.true,as.factor(c))
-  print(randy[o])
+  #randy[o] <- adjustedRandIndex(c.true,as.factor(c))
+  #print(randy[o])
   likli[o] <- multiloglikelihood(c,Y1,Y2,D1,D2,That,K, beta, ro, r, si,sig2.dat,gmmx1, gmmx2, regy1, regy2)
   print(likli[o])
   print(o/iter.burnin)

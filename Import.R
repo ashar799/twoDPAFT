@@ -47,9 +47,9 @@ library(gplots)
 library(doMC)
 library(sparcl)
 library(mixAK)
-
+library(survcomp)
 
 library(NMF)
 library(Hmisc)
 library(rms)
-library(survcomp)
+

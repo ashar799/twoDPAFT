@@ -35,10 +35,10 @@ analyzemultiDPMM = function(){
     
     for (h in 1:Nps){
       ### Adjusted Rand Indices
-      final.rand[h] <- adjustedRandIndex(c.list[[h]],as.factor(c.true))
+      #final.rand[h] <- adjustedRandIndex(c.list[[h]],as.factor(c.true))
       
       ### See C-Index (concordance index)
-      surv.aft <- Surv(time,censoring)
+      surv.aft <- Surv(exp(time),censoring)
       
       ### Predict Time from the model
       source('predictlinear.R')
@@ -93,8 +93,8 @@ analyzemultiDPMM = function(){
     ### Probability of betahat of genes FOR ONE SIMULATION
     ##colnames(final.betahat) =  c(rep("relevant",rel.D),rep("irrelevant",irrel.D))
     heatmapdata1 <- as.data.frame(final.betahat1)
-    heatmap(as.matrix(heatmapdata1), col =cm.colors(180),main = "Posterior prob. \n for Selection for Data set 1 ", cexCol = 0.85, cexRow = 0.7)
-     #heatmap.2(t(as.matrix(heatmapdata1)),dendrogram="none", col =cm.colors(180), margins=c(6,10), main = "Posterior prob. \n for Selection for Data set 1 ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+    #heatmap(as.matrix(heatmapdata1), col =cm.colors(180),main = "Posterior prob. \n for Selection for Data set 1 ", cexCol = 0.85, cexRow = 0.7)
+     heatmap.2(t(as.matrix(heatmapdata1)),dendrogram="none", col =cm.colors(180), margins=c(6,10), main = "Posterior prob. \n for Selection for Data set 1 ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
     
     
     ########################## For the second data set ####################################################
@@ -116,11 +116,11 @@ analyzemultiDPMM = function(){
     final.betahat2 <- apply(matrix.betahat2,c(1,3),mean)
     heatmapdata2 <- as.data.frame(final.betahat2)
     
-    heatmap(as.matrix(heatmapdata2), col =cm.colors(180),main = "Posterior prob. \n for Selection for Data set 1 ", cexCol = 0.85, cexRow = 0.7)
+    #heatmap(as.matrix(heatmapdata2), col =cm.colors(180),main = "Posterior prob. \n for Selection for Data set 1 ", cexCol = 0.85, cexRow = 0.7)
     
-    #heatmap.2(t(as.matrix(heatmapdata2)),dendrogram="none", col =cm.colors(180), margins=c(6,10), main = "Posterior prob. \n for Selection for Data set 2 ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+    heatmap.2(t(as.matrix(heatmapdata2)),dendrogram="none", col =cm.colors(180), margins=c(6,10), main = "Posterior prob. \n for Selection for Data set 2 ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
     
-    final.rand <<- final.rand
+    #final.rand <<- final.rand
     cindex.final1 <<- cindex.final1
     cindex.final2 <<- cindex.final2
     cindex.final <<- cindex.final

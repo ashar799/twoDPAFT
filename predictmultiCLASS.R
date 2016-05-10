@@ -149,7 +149,11 @@ predictmultiCLASS = function(Y1.test, Y2.test, time.new,censoring.new){
       ## Calculating the normalization constant for probabilities
       post <- exp(posterior) 
       
-      ctemp.new[l] <- sample(active, 1, prob= post, replace = TRUE)
+      if (sum(post) > 0){
+        ctemp.new[l] <- sample(active, 1, prob= post, replace = TRUE)
+        } else {
+          ctemp.new[l] <- sample(active, 1)
+        }
     }
     
     c.new.list[[count]] <- ctemp.new 

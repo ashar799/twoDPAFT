@@ -77,7 +77,7 @@ multiposteriorchineseAFT = function(c,Y1,Y2,D1,D2,That, K, r, si,sig2.dat,gmmx1,
       regy2$betahat[active[kminus+1], 1:D2] <- regy2$betahat[temp, 1:D2]
       regy2$sigma2[active[kminus+1]] <- regy2$sigma2[temp]
       regy2$lambda2[active[kminus+1]] <- regy2$lambda2[temp]
-      regy2$tau2[active[kminus+1], 1:D2] <- regy2$tau2t[temp, 1:D2]
+      regy2$tau2[active[kminus+1], 1:D2] <- regy2$tau2[temp, 1:D2]
     
       
       

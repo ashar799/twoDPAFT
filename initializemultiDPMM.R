@@ -26,7 +26,7 @@ initializemultiDPMM = function(){
   ## For the First Data Set
   gmmx1 <- list(0)
   gmmx1$epsilon <-  as.vector(apply(Y1,2,mean))
-  gmmx1$W <- cov(Y1)
+  gmmx1$W <- diag(diag(cov(Y1)))
   gmmx1$mu <- matrix(data = NA, nrow = K, ncol = D1)
   gmmx1$S <-  array(data = NA, dim =c(K,D1,D1))
   gmmx1$ro <- 0.5
@@ -45,7 +45,7 @@ initializemultiDPMM = function(){
   ## For the second data set
   gmmx2 <- list(0)
   gmmx2$epsilon <-  as.vector(apply(Y2,2,mean))
-  gmmx2$W <- cov(Y2)
+  gmmx2$W <- diag(diag(cov(Y2)))
   gmmx2$mu <- matrix(data = NA, nrow = K, ncol = D2)
   gmmx2$S <-  array(data = NA, dim =c(K,D2,D2))
   gmmx2$ro <- 0.5
@@ -109,7 +109,7 @@ initializemultiDPMM = function(){
   
   
   ## Adjusted Initial Rand INDEX measure
-  randindexi <<- adjustedRandIndex(c.true,as.factor(c))
+ ## randindexi <<- adjustedRandIndex(c.true,as.factor(c))
   
   ## Initial Likelihood
   source('multilikelihood.R')
